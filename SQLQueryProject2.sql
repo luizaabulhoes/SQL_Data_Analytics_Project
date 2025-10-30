@@ -1,0 +1,148 @@
+
+-- Retrieve a list of all tables in the database
+
+SELECT 
+    TABLE_CATALOG 
+    ,TABLE_SCHEMA 
+    ,TABLE_NAME 
+    ,TABLE_TYPE
+FROM INFORMATION_SCHEMA.TABLES;
+
+-- Retrieve all columns for a specific table (dim_customers)
+
+SELECT 
+    COLUMN_NAME 
+    ,DATA_TYPE 
+    ,IS_NULLABLE 
+    ,CHARACTER_MAXIMUM_LENGTH
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'dim_customers';
+
+-- Retrieve a list of unique countries from which customers originate
+
+SELECT DISTINCT 
+    country 
+FROM dbo.[gold.dim_customers]
+ORDER BY country;
+
+-- Retrieve a list of unique categories, subcategories, and products
+
+SELECT DISTINCT 
+    category 
+    ,subcategory 
+    ,product_name 
+FROM dbo.[gold.dim_products]
+ORDER BY 1,2,3;
+
+-- Determine the first and last order date and the total duration in months
+
+SELECT 
+    MIN(order_date) AS first_order_date
+    ,MAX(order_date) AS last_order_date
+    ,DATEDIFF(MONTH, MIN(order_date), MAX(order_date)) AS order_range_months
+FROM dbo.[gold.dim_customers]
+
+-- Find the youngest and oldest customer based on birthdate
+
+SELECT
+    MIN(birthdate) AS oldest_birthdate
+    ,DATEDIFF(YEAR, MIN(birthdate), GETDATE()) AS oldest_age
+    ,MAX(birthdate) AS youngest_birthdate
+    ,DATEDIFF(YEAR, MAX(birthdate), GETDATE()) AS youngest_age
+FROM dbo.[gold.dim_customers]
+
+-- Find the Total Sales
+
+SELECT 
+    SUM(sales_amount) AS total_sales 
+FROM dbo.[gold.fact_sales]
+
+-- Find how many items are sold
+
+SELECT 
+    SUM(quantity) AS total_quantity 
+FROM dbo.[gold.fact_sales]
+
+-- Find the average selling price
+
+SELECT 
+    AVG(price) AS avg_price
+FROM dbo.[gold.fact_sales]
+
+-- Find the Total number of Orders
+
+SELECT 
+    COUNT(DISTINCT order_number) AS total_orders
+FROM dbo.[gold.fact_sales]
+
+-- Find the total number of products
+
+SELECT 
+    COUNT (product_key) AS total_products 
+FROM dbo.[gold.dim_products]
+
+-- Find the total number of customers
+
+SELECT 
+    COUNT(customer_key) as total_customers
+FROM dbo.[gold.dim_customers]
+
+
+-- Find the total number of customers that has placed an order
+
+SELECT 
+    COUNT(DISTINCT customer_key) as total_customers
+FROM dbo.[gold.fact_sales]
+
+-- Generate a Report that shows all key metrics of the business
+
+SELECT 'Total Sales' AS measure_name
+    ,SUM(sales_amount) AS measure_value 
+FROM dbo.[gold.fact_sales]
+UNION ALL
+SELECT 'Total Quantity' 
+    ,SUM(quantity)  
+FROM dbo.[gold.fact_sales]
+UNION ALL
+SELECT 'Average Price' 
+    ,AVG(price) AS avg_price
+FROM dbo.[gold.fact_sales]
+UNION ALL
+SELECT 'TOTAL Nr. Orders' 
+    ,COUNT(DISTINCT order_number) 
+FROM dbo.[gold.fact_sales]
+UNION ALL
+SELECT 'TOTAL Nr. Products' 
+     ,COUNT (product_key) AS total_products 
+FROM dbo.[gold.dim_products]
+UNION ALL
+SELECT 'TOTAL Nr. Customers' 
+    ,COUNT(customer_key) as total_customers
+FROM dbo.[gold.dim_customers]
+
+-- Find total customers by contries
+
+SELECT 
+country
+,COUNT (customer_key) AS total_customers
+FROM [gold.dim_customers]
+GROUP BY country
+ORDER By 2 DESC;
+
+-- Find total customers by gender
+
+SELECT 
+gender
+,COUNT (customer_key) AS total_customers
+FROM [gold.dim_customers]
+GROUP BY gender
+ORDER By 2 DESC;
+
+-- Find total products by category
+
+SELECT
+category
+,COUNT(product_key) AS total_products
+FROM dbo.[gold.dim_products]
+GROUP BY category
+ORDER BY 2 DESC
