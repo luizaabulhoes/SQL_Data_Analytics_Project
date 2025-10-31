@@ -19,7 +19,6 @@ Each script demonstrates **best practices** in SQL for building insights, tracki
 - **Time-Based Analysis** – Explore seasonality, growth, and time trends.  
 - **Cumulative Analytics** – Create running totals, moving averages, and retention curves.  
 - **Segmentation & Cohorts** – Perform customer segmentation and behavioral analysis.  
-- **Data Quality Checks** – Validate completeness, consistency, and accuracy.  
 
 ---
 
