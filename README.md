@@ -27,7 +27,7 @@ Each script demonstrates **best practices** in SQL for building insights, tracki
 ### 📚 Credits
 
 This project is **based on the open educational materials** provided in the  
-[SQL Data Warehouse Project]((https://github.com/DataWithBaraa/sql-data-analytics-project)) course by the original creator.  
+[SQL Data Warehouse Project](https://github.com/DataWithBaraa/sql-data-analytics-project) course by the original creator.  
 All rights and original resources belong to the respective author.  
 This version was created for **portfolio and educational demonstration**.
 
