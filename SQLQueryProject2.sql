@@ -1,4 +1,16 @@
+/*
+===============================================================================
+Database Exploration
+===============================================================================
+Purpose:
+    - To explore the structure of the database, including the list of tables and their schemas.
+    - To inspect the columns and metadata for specific tables.
 
+Table Used:
+    - INFORMATION_SCHEMA.TABLES
+    - INFORMATION_SCHEMA.COLUMNS
+===============================================================================
+*/
 -- Retrieve a list of all tables in the database
 
 SELECT 
@@ -18,6 +30,19 @@ SELECT
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME = 'dim_customers';
 
+/*
+===============================================================================
+Dimensions Exploration
+===============================================================================
+Purpose:
+    - To explore the structure of dimension tables.
+	
+SQL Functions Used:
+    - DISTINCT
+    - ORDER BY
+===============================================================================
+*/
+
 -- Retrieve a list of unique countries from which customers originate
 
 SELECT DISTINCT 
@@ -33,6 +58,20 @@ SELECT DISTINCT
     ,product_name 
 FROM dbo.[gold.dim_products]
 ORDER BY 1,2,3;
+
+/*
+===============================================================================
+Date Range Exploration 
+===============================================================================
+Purpose:
+    - To determine the temporal boundaries of key data points.
+    - To understand the range of historical data.
+
+SQL Functions Used:
+    - MIN(), MAX(), DATEDIFF()
+===============================================================================
+*/
+
 
 -- Determine the first and last order date and the total duration in months
 
@@ -50,6 +89,19 @@ SELECT
     ,MAX(birthdate) AS youngest_birthdate
     ,DATEDIFF(YEAR, MAX(birthdate), GETDATE()) AS youngest_age
 FROM dbo.[gold.dim_customers]
+
+/*
+===============================================================================
+Measures Exploration (Key Metrics)
+===============================================================================
+Purpose:
+    - To calculate aggregated metrics (e.g., totals, averages) for quick insights.
+    - To identify overall trends or spot anomalies.
+
+SQL Functions Used:
+    - COUNT(), SUM(), AVG()
+===============================================================================
+*/
 
 -- Find the Total Sales
 
@@ -119,6 +171,20 @@ UNION ALL
 SELECT 'TOTAL Nr. Customers' 
     ,COUNT(customer_key) as total_customers
 FROM dbo.[gold.dim_customers]
+
+/*
+===============================================================================
+Magnitude Analysis
+===============================================================================
+Purpose:
+    - To quantify data and group results by specific dimensions.
+    - For understanding data distribution across categories.
+
+SQL Functions Used:
+    - Aggregate Functions: SUM(), COUNT(), AVG()
+    - GROUP BY, ORDER BY
+===============================================================================
+*/
 
 -- Find total customers by contries
 
@@ -191,6 +257,20 @@ LEFT JOIN dbo.[gold.dim_customers] c
 GROUP BY c.country
 ORDER BY total_sold_items DESC;
 
+/*
+===============================================================================
+Ranking Analysis
+===============================================================================
+Purpose:
+    - To rank items (e.g., products, customers) based on performance or other metrics.
+    - To identify top performers or laggards.
+
+SQL Functions Used:
+    - Window Ranking Functions: RANK(), DENSE_RANK(), ROW_NUMBER(), TOP
+    - Clauses: GROUP BY, ORDER BY
+===============================================================================
+*/
+
 -- Which 5 products Generating the Highest Revenue?
 
 
@@ -237,13 +317,14 @@ SELECT TOP 3
     c.customer_key,
     c.first_name,
     c.last_name,
-    COUNT(DISTINCT order_number) AS total_orders
+    COUNT(DISTINCT s.order_number) AS total_orders
 FROM dbo.[gold.fact_sales] s
 LEFT JOIN dbo.[gold.dim_customers] c
-    ON c.customer_key = f.customer_key
+    ON c.customer_key = s.customer_key
 GROUP BY 
     c.customer_key,
     c.first_name,
     c.last_name
 ORDER BY total_orders ;
+
 
